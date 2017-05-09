@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Simple JSON String Escaper</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<style>
+		html, body {
+			width: 100%;
+			height: 100%;
+			padding: 0;
+			margin: 0;
+		}
+
+		body {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		#container {
+			display: flex;
+			flex-direction: column;
+			max-width: 30em;
+		}
+
+		h4 {
+			margin: 0 0 5px 0;
+		}
+
+		.justify {
+			display: flex;
+			justify-content: space-between;
+		}
+
+		#errs {
+			color: red;
+		}
+	</style>
+</head>
+<body>
+	<div id="container">
+		
+		<h4>Normal Text</h4>
+		<textarea id="text" cols="50" rows="5"></textarea>
+		
+		<p class="justify">
+			<input id="escape" type="button" value="▼ Escape ▼">
+			<input id="unescape" type="button" value="▲ Unescape ▲">
+		</p>
+		
+		<h4>Escaped JSON String</h4>
+		<textarea id="json" cols="50" rows="5">""</textarea>
+		
+		<p id="errs"></p>
+	</div>
+	
+	<script type="text/javascript">
+	//<![CDATA[
+		var text = document.getElementById("text"),
+		    json = document.getElementById("json"),
+		    errs = document.getElementById("errs");
+		
+		function clearErrors() {
+			while (errs.lastChild) {
+				errs.removeChild(errs.lastChild);
+			}
+		}
+		
+		function printError(message) {
+			errs.appendChild(document.createTextNode(message));
+		}
+		
+		function getTypeName(val) {
+			var name = Object.prototype.toString.call(val);
+			return name.substring(8, name.length - 1);
+		}
+		
+		var vowelStart = /^[aeiou]/i;
+		function aOrAn(str) {
+			return (vowelStart.test(str) ? "an " : "a ") + str;
+		}
+		
+		document.getElementById("escape").onclick = function() {
+			json.value = JSON.stringify(text.value);
+		};
+		
+		document.getElementById("unescape").onclick = function() {
+			clearErrors();
+			
+			var val;
+			try {
+				val = JSON.parse(json.value);
+			} catch (e) {
+				printError("Error parsing JSON: " + e.message);
+				return;
+			}
+			
+			if (typeof val === "string") {
+				text.value = val;
+			} else {
+				printError("Parsed to "
+					+ aOrAn(getTypeName(val).toLowerCase()) + ", not a string!");
+			}
+		};
+	//]]>
+	</script>
+</body>
+</html>
